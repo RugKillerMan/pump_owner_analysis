@@ -25,10 +25,14 @@
 ## 📺 使用示例
 
 <div align="center">
-  
-[![Pump项目方一键分析插件使用教程](https://img.youtube.com/vi/4cOJl88uaEw/0.jpg)](https://www.youtube.com/watch?v=4cOJl88uaEw "Pump项目方一键分析插件使用教程")
-
-<p><i>👆 点击观看视频教程</i></p>
+  <a href="https://www.youtube.com/watch?v=4cOJl88uaEw">
+    <img src="https://img.youtube.com/vi/4cOJl88uaEw/maxresdefault.jpg" alt="Pump项目方一键分析插件使用教程" width="600" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  </a>
+  <p>
+    <a href="https://www.youtube.com/watch?v=4cOJl88uaEw">
+      <img src="https://img.shields.io/badge/观看视频教程-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="观看视频教程">
+    </a>
+  </p>
 </div>
 
 ## 🖼️ 插件展示
@@ -55,7 +59,6 @@
 - 🐦 **推特账号监控**：监控项目方推特账号的活动和异常行为
 - ⚠️ **异常行为检测**：智能识别项目方的可疑操作和异常行为
 - ⛓️ **多链支持**：支持 Solana、BNB Chain 等多个区块链网络
-- 👑 **会员特权**：提供更多高级功能和数据分析
 
 ## 🚀 快速开始
 
