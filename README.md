@@ -8,13 +8,27 @@
 
 > 一个强大的代币创建者分析工具，帮助您快速识别和分析代币项目方的历史记录和潜在风险。
 
+## 📞 联系我们
+
+<div align="center">
+  <a href="https://pumptools.me/">
+    <img src="https://img.shields.io/badge/官网-pumptools.me-blue" alt="官网">
+  </a>
+  <a href="https://x.com/pumptools_me">
+    <img src="https://img.shields.io/badge/X-@pumptools_me-black" alt="X">
+  </a>
+  <a href="https://t.me/pumptools_me">
+    <img src="https://img.shields.io/badge/Telegram-@pumptools_me-blue" alt="Telegram">
+  </a>
+</div>
+
 ## 📺 使用示例
 
 <div align="center">
-  <a href="https://www.youtube.com/watch?v=4cOJl88uaEw">
-    <img src="https://img.youtube.com/vi/4cOJl88uaEw/maxresdefault.jpg" alt="使用示例视频" width="600">
-  </a>
-  <p><i>点击图片观看视频教程</i></p>
+  
+[![Pump项目方一键分析插件使用教程](https://img.youtube.com/vi/4cOJl88uaEw/0.jpg)](https://www.youtube.com/watch?v=4cOJl88uaEw "Pump项目方一键分析插件使用教程")
+
+<p><i>👆 点击观看视频教程</i></p>
 </div>
 
 ## 🖼️ 插件展示
@@ -32,20 +46,6 @@
       <td align="center">插件在 GMGN 平台展示</td>
     </tr>
   </table>
-</div>
-
-## 📞 联系我们
-
-<div align="center">
-  <a href="https://pumptools.me/">
-    <img src="https://img.shields.io/badge/官网-pumptools.me-blue" alt="官网">
-  </a>
-  <a href="https://x.com/pumptools_me">
-    <img src="https://img.shields.io/badge/X-@pumptools_me-black" alt="X">
-  </a>
-  <a href="https://t.me/pumptools_me">
-    <img src="https://img.shields.io/badge/Telegram-@pumptools_me-blue" alt="Telegram">
-  </a>
 </div>
 
 ## ✨ 功能特点
