@@ -1,12 +1,38 @@
 # 🚀 Pump Owner Analysis
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.2-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Chrome-Extension-yellow" alt="Chrome Extension">
 </div>
 
 > 一个强大的代币创建者分析工具，帮助您快速识别和分析代币项目方的历史记录和潜在风险。
+
+## 📺 使用示例
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=4cOJl88uaEw">
+    <img src="https://img.youtube.com/vi/4cOJl88uaEw/maxresdefault.jpg" alt="使用示例视频" width="600">
+  </a>
+  <p><i>点击图片观看视频教程</i></p>
+</div>
+
+## 🖼️ 插件展示
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="./assets/dexscreener_demo.jpeg" alt="DexScreener平台展示" width="280"/></td>
+      <td><img src="./assets/axiom_demo.jpeg" alt="Axiom平台展示" width="280"/></td>
+      <td><img src="./assets/gmgn_demo.jpeg" alt="GMGN平台展示" width="280"/></td>
+    </tr>
+    <tr>
+      <td align="center">插件在 DexScreener 平台展示</td>
+      <td align="center">插件在 Axiom 平台展示</td>
+      <td align="center">插件在 GMGN 平台展示</td>
+    </tr>
+  </table>
+</div>
 
 ## 📞 联系我们
 
@@ -24,22 +50,12 @@
 
 ## ✨ 功能特点
 
-<div align="center">
-  <table>
-    <tr>
-      <td>🔍 代币创建者分析</td>
-      <td>📊 发币历史追踪</td>
-    </tr>
-    <tr>
-      <td>🐦 推特账号监控</td>
-      <td>⚠️ 异常行为检测</td>
-    </tr>
-    <tr>
-      <td>⛓️ 多链支持</td>
-      <td>👑 会员特权</td>
-    </tr>
-  </table>
-</div>
+- 🔍 **代币创建者分析**：深入分析代币创建者的历史记录和背景信息
+- 📊 **发币历史追踪**：追踪项目方的发币历史，识别潜在风险
+- 🐦 **推特账号监控**：监控项目方推特账号的活动和异常行为
+- ⚠️ **异常行为检测**：智能识别项目方的可疑操作和异常行为
+- ⛓️ **多链支持**：支持 Solana、BNB Chain 等多个区块链网络
+- 👑 **会员特权**：提供更多高级功能和数据分析
 
 ## 🚀 快速开始
 
