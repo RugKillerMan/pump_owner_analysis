@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script type="module" src="sidepanel.js"></script>
+  <style>
+    body {
+      width: 360px;
+      padding: 12px 12px 0 12px;  /* 移除底部内边距 */
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      min-height: 100vh;  /* 确保body至少有视口高度 */
+      display: flex;      /* 使用flex布局 */
+      flex-direction: column;  /* 垂直方向排列 */
+      overflow-x: hidden;  /* 禁止水平滚动 */
+      position: relative;  /* 为固定定位的子元素提供参考 */
+    }
+
+    /* 主要内容区域 */
+    .main-content {
+      flex: 1;           /* 占用剩余空间 */
+      margin-top: 12px;  /* 修改顶部边距 */
+      margin-bottom: 60px;
+      overflow-y: auto;  /* 允许内容滚动 */
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 8px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 4px;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 12px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      table-layout: fixed;  /* 使用固定表格布局 */
+    }
+
+    .history-table th,
+    .history-table td {
+      border: 1px solid #eee;
+      padding: 4px 6px;
+      text-align: left;
+      word-break: break-all;
+      max-width: 280px;  /* 设置最大宽度 */
+      overflow-wrap: break-word;  /* 允许单词内换行 */
+      word-wrap: break-word;
+    }
+
+    .history-table th {
+      background-color: #f8f9fa;
+      font-weight: 500;
+      color: #444;
+    }
+
+    .history-table th:first-child,
+    .tokens-table th:first-child {
+      width: 20%;
+    }
+
+    .history-table th:nth-child(2),
+    .tokens-table th:nth-child(2) {
+      width: 25%;
+    }
+
+    .history-table th:last-child,
+    .tokens-table th:last-child {
+      width: 55%;
+    }
+
+    .history-table tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .result-item {
+      padding: 8px;
+      margin: 4px 0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .result-item.success {
+      background-color: #e8f5e9;
+      border-left: 4px solid #4CAF50;
+    }
+
+    .result-item.warning {
+      background-color: #fff3e0;
+      border-left: 4px solid #ff9800;
+    }
+
+    .result-item.error {
+      background-color: #ffebee;
+      border-left: 4px solid #f44336;
+    }
+
+    .section-card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      margin: 0 0 8px 0;
+      padding-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .info-label {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: #1a73e8;
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .analysis-results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-section {
+      margin-top: 0;
+    }
+
+    .history-section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .history-section h4:first-child {
+      margin-top: 0;
+      color: #1a73e8;
+    }
+
+    .stats-grid {
+      margin: 8px 0;
+      padding: 8px;
+    }
+
+    .modification-log {
+      max-height: 120px;
+      overflow-y: auto;
+      line-height: 1.4;
+      font-size: 12px;
+      padding-right: 8px;
+      max-width: 280px;  /* 设置最大宽度 */
+      overflow-wrap: break-word;  /* 允许单词内换行 */
+      word-wrap: break-word;
+      word-break: break-all;  /* 允许在任何字符间换行 */
+    }
+
+    .modification-log strong {
+      color: #444;
+      font-weight: 500;
+    }
+
+    /* 美化滚动条 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+
+    .history-section h4 {
+      margin: 16px 0 8px;
+      color: #444;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .tokens-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 12px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      table-layout: fixed;  /* 使用固定表格布局 */
+    }
+
+    .tokens-table th,
+    .tokens-table td {
+      border: 1px solid #eee;
+      padding: 6px 8px;
+      text-align: left;
+      word-break: break-all;
+      max-width: 280px;  /* 设置最大宽度 */
+      overflow-wrap: break-word;  /* 允许单词内换行 */
+      word-wrap: break-word;
+    }
+
+    .tokens-table th {
+      background-color: #f8f9fa;
+      font-weight: 500;
+      color: #444;
+    }
+
+    .tokens-table tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #444;
+    }
+
+    .stat-label {
+      color: #666;
+    }
+
+    .stat-value {
+      font-weight: 500;
+      color: #1a73e8;  /* 使用蓝色 */
+    }
+
+    .stat-value.highlight {
+      font-weight: 500;  /* 保持字体粗细 */
+      color: #1a73e8;  /* 使用相同的蓝色 */
+    }
+
+    .warning-section .stats-grid {
+      background: #fff3e0;
+      border-radius: 4px;
+      padding: 12px;
+    }
+
+    .twitter-section h4 {
+      margin: 16px 0 8px;
+      color: #1a73e8;
+    }
+
+    .contract-info {
+      background: white;
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+    }
+
+    .contract-info .section-title {
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .contract-info .info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .info-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-row .info-label {
+      color: #666;
+      font-size: 12px;
+      min-width: 70px;
+    }
+
+    .info-row .info-value {
+      color: #1a73e8;
+      font-size: 12px;
+      text-align: right;
+      flex: 1;
+      max-width: 280px;  /* 设置最大宽度 */
+      overflow-wrap: break-word;  /* 允许单词内换行 */
+      word-wrap: break-word;
+      word-break: break-all;  /* 允许在任何字符间换行 */
+    }
+
+    .info-row .info-value.monospace {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      font-size: 11px;
+      background: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+      border: 1px solid #eee;
+    }
+
+    .section-title {
+      color: #202124;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .stats-grid.no-data {
+      background: #e8f5e9;  /* 使用绿色背景表示安全 */
+      text-align: center;
+      padding: 16px;
+    }
+
+    .stats-grid.no-data .stat-item {
+      justify-content: center;
+    }
+
+    .stats-grid.no-data .stat-value {
+      color: #4CAF50;  /* 使用绿色文字 */
+      font-size: 14px;
+    }
+
+    .usage-guide {
+      background: #f3f6fc;
+      border: 1px solid #e3e9f3;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .usage-guide h3 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+
+    .usage-guide ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .usage-guide li {
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .usage-guide ul {
+      padding-left: 16px;
+      margin: 2px 0;
+    }
+
+    .usage-guide code {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 1px 3px;
+      background: #fff;
+      padding: 1px 3px;
+      border-radius: 3px;
+      color: #666;
+      word-break: break-all;
+      max-width: 280px;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+
+    .usage-guide a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+
+    .usage-guide a:hover {
+      text-decoration: underline;
+    }
+
+    .usage-guide a code {
+      color: #1a73e8;  /* 让代码块的颜色与链接一致 */
+    }
+
+    .twitter-link {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+
+    .twitter-link:hover {
+      text-decoration: underline;
+    }
+
+    .warning-header {
+      margin-top: 0;  /* 移除顶部外边距 */
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #ff8c00;
+      font-weight: 500;
+      line-height: 1.3;
+      position: relative;
+      z-index: 1;
+    }
+
+    .warning-header h3 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      color: #ff8c00;
+      list-style: none;  /* 移除列表样式 */
+    }
+
+    .warning-header li {
+      margin: 2px 0;
+      list-style-type: disc;  /* 恢复红点 */
+      margin-left: 16px;
+      color: #ff8c00;
+    }
+
+    /* 为包含 highlight-text 的 li 添加样式 */
+    .warning-header li:has(.highlight-text) {
+      list-style-type: none;  /* 移除红点 */
+      margin-left: 0;  /* 移除左边距 */
+    }
+
+    .highlight-text {
+      display: inline-block;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 4px;
+      animation: attention 1.5s ease-in-out infinite;
+      position: relative;
+      margin: 5px 0;
+      border: 2px solid rgba(255, 0, 0, 0.2);
+      background: white;
+    }
+
+    /* Contact Us 区域样式 */
+    .contact-us {
+      position: fixed;  /* 固定定位 */
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      border-top: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #fff;  /* 确保背景是白色 */
+      box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);  /* 添加顶部阴影 */
+    }
+
+    .contact-us h3 {
+      font-size: 13px;
+      color: #666;
+      margin: 0;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #666;
+      text-decoration: none;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .contact-link:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #1a73e8;
+    }
+
+    .contact-link img {
+      width: 16px;
+      height: 16px;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .contact-link:hover img {
+      opacity: 1;
+    }
+
+    /* 登录区域样式 */
+    .login-section {
+      margin: 4px auto;
+      padding: 6px 12px;  /* 减小上下内边距 */
+      width: calc(100% - 24px);  /* 修改宽度计算方式，减去左右内边距 */
+      background: #ffffff;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .login-button {
+      background: #333538;
+      color: white;
+      padding: 6px 16px;
+      height: 24px;  /* 减小按钮高度 */
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;  /* 稍微减小字体大小 */
+      font-weight: 500;
+      min-width: 10px;
+      margin: 0;
+      transition: all 0.2s ease;
+      letter-spacing: 0.2px;
+    }
+
+    .login-button:hover {
+      background: #484b53;
+      transform: translateY(-1px);
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .login-button:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 用户信息区域样式 */
+    .user-info {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      height: 24px;  /* 减小高度以匹配按钮 */
+    }
+
+    .user-info:hover {
+      border-color: #2563eb;
+      background: #f0f4fe;
+    }
+
+    .username {
+      font-size: 13px;
+      color: #475569;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+
+    .logout-button {
+      background: transparent;
+      color: #dc2626;
+      padding: 4px 12px;
+      border: 1px solid #fee2e2;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 60px;
+      height: 24px;
+      margin: 0;
+      transition: all 0.15s ease;
+    }
+
+    .logout-button:hover {
+      background: #dc2626;
+      color: white;
+      border-color: #dc2626;
+    }
+
+    .logout-button:active {
+      transform: scale(0.96);
+    }
+
+    /* 钱包选择弹窗样式 */
+    .wallet-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding-bottom: 15vh; /* 向上偏移整体高度的15% */
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 85%;
+      max-width: 300px;
+      position: relative;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0 0 20px 0;
+      text-align: center;
+      letter-spacing: 0.2px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.15s ease;
+    }
+
+    .close-modal:hover {
+      background-color: #f1f5f9;
+      color: #475569;
+    }
+
+    .wallet-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #ffffff;
+      height: 48px;
+    }
+
+    .wallet-option:hover {
+      border-color: #2563eb;
+      background-color: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .wallet-option:active {
+      transform: translateY(0);
+    }
+
+    .wallet-icon {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .wallet-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      letter-spacing: 0.2px;
+    }
+
+    .loading-section {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .table-container {
+      margin-top: 12px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+
+    .tokens-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .tokens-table th,
+    .tokens-table td {
+      padding: 6px 8px;
+      text-align: left;
+      border: 1px solid #eee;
+      vertical-align: top;
+      word-break: break-all;  /* 允许在任何字符处换行 */
+    }
+
+    /* 调整列宽比例 */
+    .tokens-table th:nth-child(1) {  /* 链 */
+      width: 18%;  /* 从15%增加到18% */
+    }
+    .tokens-table th:nth-child(2) {  /* 代币符号 */
+      width: 12%;
+    }
+    .tokens-table th:nth-child(3) {  /* 合约地址 */
+      width: 54%;  /* 相应减少到54% */
+    }
+    .tokens-table th:nth-child(4) {  /* 市值 */
+      width: 16%;
+    }
+
+    /* 为链列添加更多内边距 */
+    .tokens-table td:first-child {
+      padding-left: 14px;  /* 增加左内边距 */
+      padding-right: 14px; /* 增加右内边距 */
+    }
+
+    .tokens-table td.monospace {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 11px;
+      background: #f8f9fa;
+    }
+
+    .tokens-table thead th {
+      background: #f8f9fa;
+      font-weight: 500;
+      color: #444;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      box-shadow: 0 1px 0 #eee;
+    }
+
+    .tokens-table tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .tokens-table tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .warning-bg {
+      background: #fff3e0;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;  /* 减小间距 */
+      margin-top: 12px;
+      padding: 6px;
+      border-top: 1px solid #eee;
+    }
+
+    .page-btn {
+      padding: 4px 8px;  /* 减小内边距 */
+      min-width: 60px;  /* 设置最小宽度 */
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #f5f5f5;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 12px;
+      color: #666;
+      white-space: nowrap;  /* 防止文字换行 */
+    }
+
+    .current-page {
+      font-weight: 500;
+      color: #1a73e8;
+    }
+
+    /* 修改历史表格的特殊样式 */
+    .modifications-table th:nth-child(1) {  /* 修改类型 */
+      width: 15%;
+    }
+    .modifications-table th:nth-child(2) {  /* 修改内容 */
+      width: 65%;
+    }
+    .modifications-table th:nth-child(3) {  /* 修改时间 */
+      width: 20%;
+    }
+
+    .modifications-table td.modification-content {
+      white-space: pre-line;  /* 保留换行符 */
+      font-size: 11px;
+      color: #444;
+      line-height: 1.3;
+    }
+
+    /* 确保修改内容单元格内的文本可以换行 */
+    .modifications-table td {
+      vertical-align: top;
+      padding: 6px 10px;
+    }
+
+    /* 修改汇总卡片的样式 */
+    .summary-card {
+      background: #fff2f2;  /* 使用浅红色背景 */
+      border: 1px solid #ffcdd2;  /* 使用红色边框 */
+    }
+
+    .summary-card .stats-grid {
+      background: #fff8f8;  /* 统计信息区域使用更浅的红色背景 */
+      border: 1px solid #ffebee;  /* 添加浅红色边框 */
+    }
+
+    .summary-card .section-title {
+      color: #d32f2f;  /* 保持标题红色 */
+      font-weight: 500;
+      border-bottom: 1px solid #ffcdd2;  /* 使用红色边框 */
+    }
+
+    .summary-card .stat-item {
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .summary-card .stat-value {
+      font-weight: 500;
+      color: #1a73e8;
+    }
+
+    /* 添加风险值样式 */
+    .stat-value.high-risk {
+      color: #d32f2f !important;  /* 红色 */
+      font-weight: bold;
+    }
+
+    .stat-value.medium-risk {
+      color: #1a73e8;  /* 蓝色 */
+    }
+
+    .stat-value.low-risk {
+      color: #2e7d32;  /* 绿色 */
+      font-weight: bold;
+    }
+
+    /* 修改当前合约高亮样式 */
+    .tokens-table tr.current-contract td {
+      background-color: #fff3cd !important;  /* 浅黄色背景应用到每个单元格 */
+    }
+
+    .tokens-table tr.current-contract:hover td {
+      background-color: #ffe69c !important;  /* 鼠标悬停时的颜色也应用到每个单元格 */
+    }
+
+    /* 确保 monospace 单元格的背景色不会覆盖高亮 */
+    .tokens-table tr.current-contract td.monospace {
+      background-color: #fff3cd !important;
+    }
+
+    .tokens-table tr.current-contract:hover td.monospace {
+      background-color: #ffe69c !important;
+    }
+
+    /* 添加合约链接样式 */
+    .contract-link {
+      color: #1a73e8;
+      text-decoration: none;
+      display: block;  /* 使链接占满单元格 */
+    }
+
+    .contract-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 确保当前合约的链接在高亮背景下也清晰可见 */
+    .tokens-table tr.current-contract td .contract-link {
+      color: #0d47a1;  /* 使用深蓝色以在黄色背景上更清晰 */
+    }
+
+    /* 语言切换按钮样式 */
+    .lang-switch {
+      font-size: 12px;
+      color: #666;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 移除所有hover效果 */
+    .lang-switch:hover {
+      color: #666;
+      background: transparent;
+    }
+
+    .lang-switch::before {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"%3E%3C/path%3E%3C/svg%3E');
+      opacity: 0.7;
+    }
+
+    .lang-switch:hover::before {
+      opacity: 0.7;
+    }
+
+    .wallet-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .wallet-modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .wallet-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .wallet-modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .wallet-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .wallet-option:hover {
+      background: #f5f5f5;
+      border-color: #ddd;
+    }
+
+    .wallet-icon {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+    }
+
+    .wallet-option span {
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* 会员状态区域样式 */
+    .membership-section {
+      margin: 4px 0px 8px 0px;  /* 只修改底部外边距为8px */
+      font-size: 13px;
+    }
+
+    .membership-status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;  /* 改为左对齐 */
+      background: #f8fafc;
+      padding: 8px 12px;
+      transition: all 0.2s ease;
+    }
+
+    .membership-status:hover {
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    .status-info {
+      display: flex;
+      align-items: center;
+      flex: 1;  /* 让状态信息占据剩余空间 */
+      gap: 8px;
+    }
+
+    .status-value {
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      color: #64748b;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .status-value::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .status-value.member {
+      color: #059669;
+    }
+
+    .status-value.member::before {
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+    }
+
+    .status-value.non-member {
+      color: #64748b;
+    }
+
+    .status-value.non-member::before {
+      background: #94a3b8;
+      box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1);
+    }
+
+    .refresh-button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .refresh-button:hover {
+      color: #64748b;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .refresh-button.loading svg {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .purchase-link {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 12px;  /* 减小字体大小 */
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #eff6ff;
+      transition: all 0.2s;
+      height: 20px;  /* 减小高度 */
+    }
+
+    .purchase-link:hover {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .purchase-link svg {
+      transition: transform 0.2s;
+    }
+
+    .purchase-link:hover svg {
+      transform: translate(1px, -1px);
+    }
+
+    /* 修改动画效果的颜色配置 */
+    @keyframes attention {
+      0%, 100% {
+        color: #ff0000;
+        background: rgba(255, 0, 0, 0.05);
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+      }
+      50% {
+        color: #ff4d4d;
+        background: rgba(255, 0, 0, 0.1);
+        transform: scale(1.05);
+        text-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+      }
+    }
+
+    .highlight-text {
+      display: inline-block;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 4px;
+      animation: attention 1.5s ease-in-out infinite;
+      position: relative;
+      margin: 5px 0;
+      border: 2px solid rgba(255, 0, 0, 0.2);
+      background: white;
+    }
+
+    .highlight-text:hover {
+      animation-play-state: paused;
+      cursor: pointer;
+      background: rgba(255, 0, 0, 0.05);
+    }
+
+    .warning-header li.no-bullet {
+      list-style-type: none;
+      margin-left: 0;
+    }
+
+    /* 调整头部区域样式 */
+    .header-section {
+      padding: 8px 12px;  /* 减小内边距 */
+      margin-bottom: 8px;  /* 减小底部间距 */
+    }
+
+    /* 调整语言切换和钱包地址区域 */
+    .language-wallet-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;  /* 减小底部间距 */
+    }
+
+    /* 调整有效期显示 */
+    .expiry-section {
+      margin-top: 4px;  /* 减小顶部间距 */
+      font-size: 13px;  /* 稍微减小字体大小 */
+    }
+
+    /* 调整钱包地址区域 */
+    .wallet-section {
+      padding: 6px 10px;  /* 减小内边距 */
+      font-size: 13px;
+    }
+
+    /* 添加 VIP 提醒样式 */
+    .vip-warning {
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #dc2626;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-section">
+    <button class="lang-switch" id="langSwitch">English</button>
+    <div class="user-info">
+      <span class="username"></span>
+      <button class="logout-button">disconnect</button>
+    </div>
+    <button class="login-button">连接钱包</button>
+
+    <!-- 钱包选择弹窗 -->
+    <div class="wallet-modal" style="display: none;">
+      <div class="wallet-modal-content">
+        <div class="wallet-modal-header">
+          <h3>选择钱包</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="wallet-options">
+          <button class="wallet-option" data-wallet="okx">
+            <img src="./src/okx.svg" alt="OKX Wallet" class="wallet-icon" id="okx-icon">
+            <span>OKX</span>
+          </button>
+          <button class="wallet-option" data-wallet="phantom">
+            <img src="./src/phantom.svg" alt="Phantom" class="wallet-icon" id="phantom-icon">
+            <span>Phantom</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="wallet-membership" class="membership-section">
+    <div class="membership-status">
+      <div class="status-info">
+        <span class="status-value" id="membershipStatus">非会员</span>
+        <div class="refresh-button" id="refreshMembership" title="刷新会员状态">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.453 12.893C19.604 16.9 16.056 19.8 12 19.8C7.244 19.8 3.4 15.956 3.4 11.2C3.4 6.444 7.244 2.6 12 2.6C15.087 2.6 17.804 4.158 19.35 6.489" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M20.6 2V7.4H15.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <a href="https://pumptools.me/pay" target="_blank" class="purchase-link" id="purchaseLink">
+        <span>购买会员</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="warning-header">
+      <h3>注意：</h3>
+      <li class="no-bullet">
+        <a href="https://x.com/pumptools_me" target="_blank" class="highlight-text" style="text-decoration: none; display: block; cursor: pointer;">
+          关注我们的推特，联系我们可以领取3日免费资格，先到先得，名额有限！
+        </a>
+      </li>
+      <li class="no-bullet">
+        <a href="https://gmgn.ai" target="_blank" class="highlight-text" style="text-decoration: none; display: block; cursor: pointer;">
+          一定要先打开支持的站点页面再点击登录哦！！！
+        </a>
+      </li>
+      <li>当前只专注于分析合约的创建者以及绑定推特的分析！</li>
+      <li>当前支持站点：GMGN、DexScreener、Axiom！</li>
+      <li>当前创建者历史分析只支持SOL，推特分析所有链都支持！</li>
+      <li>祝各位老板们早日发财！！！</li>
+    </div>
+    <div class="usage-guide">
+      <h3>使用说明：</h3>
+      <ol>
+        <li>Demo展示：<a href="https://x.com/pumptools_me/status/1907491365140967806" target="_blank">X推文链接</a></li>
+        <li>打开支持的网站页面，例如：</li>
+        <ul>
+          <li>GMGN: <a href="https://gmgn.ai/sol/token/dqTU84Mspi8eNwJnATCd32YZtsjV6fSvo11Fx1hpump" target="_blank"><code>https://gmgn.ai/sol/token/...</code></a></li>
+          <li>DexScreener: <a href="https://dexscreener.com/solana/epzqbdxlewkatbbejjld5drrcbmxxcdgkkvbhdcfl7q" target="_blank"><code>https://dexscreener.com/solana/...</code></a></li>
+          <li>Axiom: <a href="https://axiom.trade/meme/63amWndBz75z2j7jyKDbzXvzt36L9qdGw7CZAXbD4KNe" target="_blank"><code>https://axiom.trade/meme/...</code></a></li>
+        </ul>
+        <li>点击登录按钮，连接钱包。一定要先打开支持的站点页面再点击登录！！！</li>
+        <li>点击下方"分析当前合约"按钮</li>
+        <li>查看分析结果</li>
+      </ol>
+    </div>
+    <button id="analyzeBtn">分析当前合约</button>
+    <div id="result"></div>
+  </div>
+
+  <div class="contact-us">
+    <h3>Contact Us</h3>
+    <div class="contact-links">
+      <a href="https://pumptools.me" target="_blank" class="contact-link">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E" alt="Website">
+        官网
+      </a>
+      <a href="https://t.me/pumptools_me" target="_blank" class="contact-link">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.48-.428-.009-1.252-.241-1.865-.44-.751-.244-1.349-.374-1.297-.789.027-.216.324-.437.892-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.119.098.152.228.166.331.016.122.037.384.021.598z'/%3E%3C/svg%3E" alt="Telegram">
+        TG群
+      </a>
+      <a href="https://x.com/pumptools_me" target="_blank" class="contact-link">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/%3E%3C/svg%3E" alt="Twitter">
+        推特
+      </a>
+    </div>
+  </div>
+
+  <script src="BaseAnalyzer.js"></script>
+  <script src="analyzers/axiom-analyzer.js"></script>
+  <script src="analyzers/dexscreener-analyzer.js"></script>
+  <script src="analyzers/gmgn-analyzer.js"></script>
+  <script src="analyzer-rules.js"></script>
+  <script src="analyzer-registry.js"></script>
+  <script src="auth.js"></script>
+  <script src="wallet-connector.js"></script>
+  <script src="membership.js"></script>
+</body>
+</html>

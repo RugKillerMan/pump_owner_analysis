@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Pump项目方一键分析",
+  "version": "1.2",
+  "description": "一键分析代币创建者和推特的历史信息，防止被割，助你安全上车，目前支持了GMGN、DexScreener、Axiom",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "tabs",
+    "storage"
+  ],
+  "action": {
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "host_permissions": [
+    "https://*.gmgn.ai/*",
+    "https://*.dexscreener.com/*",
+    "https://*.axiom.trade/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
