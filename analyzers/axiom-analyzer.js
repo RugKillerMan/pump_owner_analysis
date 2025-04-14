@@ -2,13 +2,15 @@ class AxiomAnalyzer extends BaseAnalyzer {
   static siteConfigs = {
     'axiom.trade': [
       {
-        xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[1]/span[1]',
+        // xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[1]/span[1]',
+        xpath: '/html/body/div[1]/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[1]/span[1]',
         type: 'content',
         name: '代币符号',
         process: (text) => text.trim()
       },
       {
-        xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[1]/div[2]/div/div/img',
+        // xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[1]/div[2]/div/div/img',
+        xpath: '/html/body/div[1]/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[1]/div[2]/div/div/img',
         type: 'contract',
         name: '合约地址',
         process: (src) => {
@@ -24,7 +26,8 @@ class AxiomAnalyzer extends BaseAnalyzer {
         }
       },
       {
-        xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[2]/span[2]/a',
+        // xpath: '/html/body/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[2]/span[2]/a',
+        xpath: '/html/body/div[1]/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div[2]/div[2]/a[2]/span/a',
         type: 'twitter',
         name: '绑定推特',
         process: (href) => {
